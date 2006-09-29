@@ -102,14 +102,16 @@ Text::Lorem::More - More methods to create a wider variety of Latin-looking text
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 MORE TESTING NEEDED
+
 =head1 MORE DOCUMENTATION NEEDED
+
 =head1 ...but it should work...
 
 =head1 SYNOPSIS
@@ -133,12 +135,6 @@ This module is useful for creating random content.
 =head2 generate
 
 =head2 _generate
-
-=head2 words
-
-=head2 sentences
-
-=head2 paragraphs
 
 =cut
 
@@ -234,6 +230,22 @@ sub DESTROY {
 
 Robert Krimen, C<< <robertkrimen at gmail.com> >>
 
+=head1 SEE ALSO
+
+L<Text::Lorem> and L<WWW::Lipsum> and L<http://lipsum.com/>
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to Adeola Awoyemi for writing L<Text::Lorem> which was the inspiration
+behind this module.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006 Robert Krimen, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
 =head1 BUGS
 
 Please report any bugs or feature requests to
@@ -269,15 +281,6 @@ L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-Lorem-More>
 L<http://search.cpan.org/dist/Text-Lorem-More>
 
 =back
-
-=head1 ACKNOWLEDGEMENTS
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2006 Robert Krimen, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut
 
