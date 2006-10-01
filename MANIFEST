@@ -11,5 +11,3 @@ t/02-compatability.t
 t/03-singleton.t
 t/04-brace.t
 t/05-escape.t
-t/pod-coverage.t
-t/pod.t

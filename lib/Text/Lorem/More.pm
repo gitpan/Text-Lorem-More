@@ -9,11 +9,11 @@ Text::Lorem::More - Generate correctly formatted nonsense using random Latin wor
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use Text::Lorem::More::Source;
 use Carp;
