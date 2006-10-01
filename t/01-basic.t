@@ -12,6 +12,8 @@ like( $name, qr/^[A-Z]/, "First letter of name is uppercase" );
 ok( my $fullname = $lorem->fullname, "Generate a fullname (first and last)" );
 like( $fullname, qr/^(?:[A-Z][a-z]*(\s|$)){2}/, "First letter of firstname and lastname is uppercase" );
 like( $lorem->sentence, qr/^[A-Z].*\.$/, "Sentence has a capital first letter and a period at the end" );
+unlike($lorem->email, qr/domainname/, "Test for a bug");
+
 
 #ok( my $words = $object->words(3),              "Got some words" );
 #is( my @foo = split( /\s+/, $words ), 3,        "There were 3 words" );
