@@ -9,11 +9,11 @@ Text::Lorem::More - Generate correctly formatted nonsense using random Latin wor
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use Text::Lorem::More::Source;
 use Carp;
@@ -83,7 +83,7 @@ _END_
 
 	email => [ map { [ $_ ] } split m/\n/, <<_END_ ],
 +word\@+hostname
-+word\@+domainame
++word\@+domainname
 _END_
 
 	mail => "email",
@@ -159,7 +159,8 @@ our @EXPORT_OK = qw(lorem);
 =head1 FUNCTIONS
 
 =head2 new
-	Construct a new Text::Lorem::More object with (optional) source.
+
+Construct a new Text::Lorem::More object with (optional) source.
 =cut
 sub new {
 	my $self = bless {}, shift;

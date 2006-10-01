@@ -4,6 +4,7 @@ use warnings;
 use strict;
 
 use constant DEFAULT_PRIORITY => 2 ** 6;
+use Carp;
 
 sub new {
 	my $self = bless {}, shift;
@@ -41,6 +42,8 @@ sub find {
 		return $generatelet if ref $generatelet;
 		return $self->find($generatelet);
 	}
+
+	croak "couldn't find generatelet for \"$name\"";
 }
 
 1;
