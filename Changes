@@ -1,3 +1,13 @@
+0.04 2006-10-1
+   + Separate parsing/generation into separate functions: parse() & generate()
+   + parse() uses a simple Parse::RecDescent grammar so we can escape '+'.
+   + Can now bracket a variable (e.g., "+{name}") to prevent unintended interpolation.
+   + 03-singleton.t
+   + 04-brace.t
+   + 05-escape.t
+0.03 2006-09-29
+   + Switch from MakeMaker to Module::Build.
+   + 02-compatibility.t
 0.02 2006-09-29
    + Update to the manifest and some documentation.
 0.01 2006-09-28

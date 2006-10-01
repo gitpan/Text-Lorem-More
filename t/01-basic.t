@@ -6,11 +6,13 @@ use warnings;
 use Test::More 'no_plan';
 
 use_ok("Text::Lorem::More");
-ok( my $tlm = Text::Lorem::More->new(), "Instantiate a Text::Lorem::More object" );
-ok( my $name = $tlm->name, "Generate a name" );
+ok( my $lorem = Text::Lorem::More->new(), "Instantiate a Text::Lorem::More object" );
+ok( my $name = $lorem->name, "Generate a name" );
 like( $name, qr/^[A-Z]/, "First letter of name is uppercase" );
-ok( my $fullname = $tlm->fullname, "Generate a fullname (first and last)" );
+ok( my $fullname = $lorem->fullname, "Generate a fullname (first and last)" );
 like( $fullname, qr/^(?:[A-Z][a-z]*(\s|$)){2}/, "First letter of firstname and lastname is uppercase" );
+like( $lorem->sentence, qr/^[A-Z].*\.$/, "Sentence has a capital first letter and a period at the end" );
+
 #ok( my $words = $object->words(3),              "Got some words" );
 #is( my @foo = split( /\s+/, $words ), 3,        "There were 3 words" );
 #ok( my $sentences = $object->sentences(3),      "Got some sentences" );

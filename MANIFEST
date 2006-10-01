@@ -1,13 +1,15 @@
+Build.PL
 Changes
-MANIFEST
-META.yml # Will be created by "make dist"
-Makefile.PL
-README
 lib/Text/Lorem/More.pm
 lib/Text/Lorem/More/Source.pm
+MANIFEST			This list of files
+META.yml
+README
 t/00-load.t
 t/01-basic.t
 t/02-compatability.t
-t/boilerplate.t
+t/03-singleton.t
+t/04-brace.t
+t/05-escape.t
 t/pod-coverage.t
 t/pod.t
