@@ -1,3 +1,6 @@
+0.08 2006-10-1
+   + 'title' generatelet.
+   + 'description' generatelet.
 0.07 2006-10-1
    + Minor bug fix, for real this time.
    + New croak to catch a missing generatelet.
