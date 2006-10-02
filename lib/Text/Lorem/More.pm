@@ -9,11 +9,11 @@ Text::Lorem::More - Generate formatted nonsense using random Latin words.
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use Text::Lorem::More::Source;
 use Carp;
@@ -161,7 +161,7 @@ our @EXPORT_OK = qw(lorem);
 
 =head2 new [$source]
 
-	Construct a new Text::Lorem::More object
+Construct a new Text::Lorem::More object
 
 =cut
 sub new {
@@ -193,16 +193,16 @@ Generate some text using the specified pattern.
 
 C<generate> is faster than C<process>, as C<generate> uses regex to perform substitution.
 
-In list context, C<generate> will return list with C<$count> number of "words"
+In list context, return a list with C<$count> number of "words"
 
-In scalar context, C<generate> will return some text repeating the C<$pattern> C<$count> times and joined by C<$separator>.
+In scalar context, return C<$pattern> repeated C<$count> times and joined by C<$separator>.
 
 B<If you do not specify scalar context on the receiving end, then the separator will simply be discarded.>
 B<This may change in the future>
 
-The default for C<$count> is 1
+The default for C<$count> is 1.
 
-The default for C<$separator> is " "
+The default for C<$separator> is " ".
 
 A pattern will usually contain one or more generator tokens.  For example:
 
@@ -225,7 +225,7 @@ But this will:
 
 	prefix+{name}suffix
 
-If you need to include a '+' in your pattern, you'll have to use parse instead.
+If you need to include a '+' in your pattern, you'll have to use C<parse> instead.
 
 =cut
 sub generate {
@@ -236,7 +236,7 @@ sub generate {
 	return $self->_generate(@_);
 }
 
-=head2 process C<$text>
+=head2 process $text
 
 Process a block of text, performing pattern substitutions as they're found.
 
@@ -246,7 +246,7 @@ To escape '+', simply repeat it. For example, to produce "2 + 2" you would submi
 
 	2 ++ 2
 
-Please see generate for more information.
+Please see C<generate> for more information.
 
 =cut
 sub process {
@@ -259,7 +259,7 @@ sub process {
 
 =head2 source
 
-	Return the generator source for this instance.
+Return the generator source for this instance.
 
 =cut
 sub source {
@@ -269,7 +269,7 @@ sub source {
 
 =head2 lorem
 
-	A L<Text::Lorem::More> singleton.
+A L<Text::Lorem::More> singleton.
 
 =cut
 sub lorem() { __PACKAGE__->_singleton }
@@ -430,6 +430,8 @@ This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =head1 BUGS
+
+Probaby a lot. Please report them (as below) and I'll take a look.
 
 Please report any bugs or feature requests to
 C<bug-text-lorem-more at rt.cpan.org>, or through the web interface at
