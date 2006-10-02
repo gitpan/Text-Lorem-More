@@ -8,5 +8,8 @@ use Test::More 'no_plan';
 use_ok("Text::Lorem::More");
 use Text::Lorem::More qw(lorem);
 
-#warn lorem->generate("++");
-#warn lorem->parse("++name");
+is(lorem->process("++name"), "+name");
+like(lorem->process("+++name"), qr/^\+/);
+isnt(lorem->process("+++name"), "+name");
+isnt(lorem->process("+++name"), "++name");
+isnt(lorem->process("+++name"), "+++name");

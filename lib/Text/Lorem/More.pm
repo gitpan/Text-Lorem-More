@@ -5,15 +5,15 @@ use strict;
 
 =head1 NAME
 
-Text::Lorem::More - Generate correctly formatted nonsense using random Latin words.
+Text::Lorem::More - Generate formatted nonsense using random Latin words.
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use Text::Lorem::More::Source;
 use Carp;
@@ -24,7 +24,7 @@ our $PARSER = Parse::RecDescent->new(<<'_END_');
 content: <rulevar: local @content >
 content: <skip:''> pattern(s) { \@content }
 pattern: escape | variable | text
-escape: '++'  { push @content, "+" }
+escape: '++'  { push @content, \"+" }
 variable: '+{' identifier '}' | '+' identifier
 identifier: /[A-Za-z0-9_]+/ { push @content, $item[1] }
 text: m/[^\+]+/ { push @content, \$item[1] }
@@ -32,6 +32,9 @@ _END_
 
 our %GENERATOR = (
 	name => sub { [ sub { ucfirst lc $_ }, "+word" ] },
+
+	firstname => "name",
+	lastname => "name",
 
 	username => "word",
 
@@ -121,38 +124,32 @@ _END_
 use constant MAXIMUM_RECURSION => 2 ** 12;
 use constant GENERATOR => \%GENERATOR;
 
-=head1 MORE TESTING NEEDED
-
-=head1 MORE DOCUMENTATION NEEDED
-
-=head1 ...but it should work...
-
 =head1 SYNOPSIS
 
-Generate correctly formatted nonsense using random Latin words.
+Generate formatted nonsense using random Latin words.
 
-    use Text::Lorem::More;
+	use Text::Lorem::More;
 
-    my $tlm = Text::Lorem::More->new();
+	my $lorem = Text::Lorem::More->new();
 	
-	# Print out a greeting to a random person.
-	print "Hello, ", $tlm->fullname, "\n";
+	# Greet a friend
+	print "Hello, ", $lorem->fullname, "\n";
 
 	# You could also ...
-	print $tlm->generate("Hello, +fullname\n");
+	print $lorem->process("Hello, +fullname\n");
 
-	... Or, you can use this package functionally, e.g.:
+	... or you can use the singleton:
 
 	use Text::Lorem::More qw(lorem);
 
-	# Just generate a simple word.
+	# Generate a random latin word
 	my $latinwordoftheday = lorem->word;
 
-	# Produce text in the same manner as Text::Lorem
+	# Produce paragaphs in the Text::Lorem compatible manner
 	my $content = lorem->paragraphs(3);
 
 	# Print 4 paragraphs, each separated by a single newline and tab:
-	print "\t", lorem->paragraph(4, "\n\t");
+	print "\t", scalar lorem->paragraph(4, "\n\t");
 
 =head1 EXPORT
 
@@ -162,9 +159,10 @@ our @EXPORT_OK = qw(lorem);
 
 =head1 FUNCTIONS
 
-=head2 new
+=head2 new [$source]
 
-	Construct a new Text::Lorem::More object with (optional) source.
+	Construct a new Text::Lorem::More object
+
 =cut
 sub new {
 	my $self = bless {}, shift;
@@ -189,8 +187,46 @@ sub new {
 	return $self;
 }
 
-=head2 generate
-	Generate some random-looking text using the specified pattern.
+=head2 generate $pattern [, $count, $separator]
+
+Generate some text using the specified pattern.
+
+C<generate> is faster than C<process>, as C<generate> uses regex to perform substitution.
+
+In list context, C<generate> will return list with C<$count> number of "words"
+
+In scalar context, C<generate> will return some text repeating the C<$pattern> C<$count> times and joined by C<$separator>.
+
+B<If you do not specify scalar context on the receiving end, then the separator will simply be discarded.>
+B<This may change in the future>
+
+The default for C<$count> is 1
+
+The default for C<$separator> is " "
+
+A pattern will usually contain one or more generator tokens.  For example:
+
+	+name
+	+fullname
+	+word+word+word+word
+
+The pattern can also contain other text:
+
+	+name@+domainname
+	"+firstname +lastname"
+
+Sometimes you might need to enclose the token identifier between C<+{> and C<}>
+
+For example, the following pattern won't work right:
+
+	prefix+namesuffix
+
+But this will:
+
+	prefix+{name}suffix
+
+If you need to include a '+' in your pattern, you'll have to use parse instead.
+
 =cut
 sub generate {
 	my $self = shift;
@@ -200,18 +236,31 @@ sub generate {
 	return $self->_generate(@_);
 }
 
-=head2 parse
+=head2 process C<$text>
+
+Process a block of text, performing pattern substitutions as they're found.
+
+process is slower than generate, as process uses L<Parse::RecDescent>.
+
+To escape '+', simply repeat it. For example, to produce "2 + 2" you would submit:
+
+	2 ++ 2
+
+Please see generate for more information.
+
 =cut
-sub parse {
+sub process {
 	my $self = shift;
 	# _parse may recurse any number of times.
 	# the RECURSION counter makes sure it doesn't get out of hand.
 	local $Text::Lorem::More::RECURSION = 0;
-	return $self->_parse(@_);
+	return $self->_process(@_);
 }
 
 =head2 source
-	Return the source for this instance.
+
+	Return the generator source for this instance.
+
 =cut
 sub source {
 	my $self = shift;
@@ -219,7 +268,9 @@ sub source {
 }
 
 =head2 lorem
-	Return a singleton using the default generators.
+
+	A L<Text::Lorem::More> singleton.
+
 =cut
 sub lorem() { __PACKAGE__->_singleton }
 
@@ -249,7 +300,7 @@ sub AUTOLOAD {
 }
 
 our ($RECURSION, $COUNT, $PRUNE);
-sub _parse {
+sub _process {
 	my $self = shift;
 	my $content = shift;
 	my $count = shift;
