@@ -9,7 +9,7 @@ Text::Lorem::More - Generate formatted nonsense using random Latin words.
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =head1 SYNOPSIS
 
@@ -17,7 +17,7 @@ Generate formatted nonsense using random Latin words.
 
 	use Text::Lorem::More;
 
-	my $lorem = Text::Lorem::More->new();
+	my $lorem = Text::Lorem::More->new;
 	
 	# Greet a friend
 	print "Hello, ", $lorem->fullname, "\n";
@@ -40,12 +40,14 @@ Generate formatted nonsense using random Latin words.
 
 =cut
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
+
+use base qw/Exporter/;
+
+use Carp;
+use Parse::RecDescent;
 
 use Text::Lorem::More::Source;
-use Carp;
-use base qw(Exporter);
-use Parse::RecDescent;
     
 our $PARSER = Parse::RecDescent->new(<<'_END_');
 content: <rulevar: local @content >
@@ -72,9 +74,44 @@ To use the hostname generator, for example:
 	# This will do the same thing ...
 	my $otherhostname = $lorem->generate("+hostname");
 
-=head2 name firstname lastname
+=head2 word
 
-A random latin word with the first letter capitalized
+Generates random latin word.
+
+	dicta
+	sed
+	repellat
+
+=head2 sentence
+
+Generates between 4 and 9 words, with the first letter of the first word capitalized and a period following
+the last word.
+
+=head2 paragraph
+
+Generates between 3 and 6 sentences, 
+
+=head2 words $count
+
+A Text::Lorem compatible words generator.
+Will generate $count words joined by " ".
+
+=head2 sentences $count
+
+A Text::Lorem compatible sentences generator.
+Will generate $count sentences joined by " ".
+Each sentence contains between 4 and 9 words and ends with a period.
+B<Passing in 0 for count will still produce a single period!>
+
+=head2 paragraphs $count
+
+A Text::Lorem compatible sentences generator.
+Will generate $count paragraphs joined by "\n\n".
+Each paragraph contains between 3 and 6 sentences.
+
+=head2 name / firstname / lastname
+
+Generates a random latin word with the first letter capitalized
 
 	Repellat
 	Sed
@@ -82,50 +119,50 @@ A random latin word with the first letter capitalized
 
 =head2 fullname
 
-A firstname and lastname separated by a space
+Generates a firstname and lastname separated by a space
 
 	Lorem Dicta
 
 =head2 username
 
-A random latin word
+Generates a random latin word
 
-=head2 word
+=head2 title
 
-A random latin word
-
-	dicta
-	sed
-	repellat
+Generates between 1 and 3 words with the first letter of the first word capitalized
 
 =head2 description
 
-=head2 sentence
+Generates between 1 and 3 sentences.
 
-Between 4 and 9 words, with the first letter of the first word capitalized and a period following
-the last word.
+=head2 tld / topleveldomain
 
-=head2 paragraph
+Generates a top level domain.
+Currently, this will either be "com", "org", or "net".
 
-=head2 words
+=head2 domain / domainname
 
-=head2 sentences
+Generates a domainname.
+Currently, this will attach "example" to a tld generator result. 
 
-=head2 paragraphs
+	example.com
+	example.net
 
-=head2 email mail
+=head2 host / hostname
+
+Generates a hostname.
+Currently, this will either return a plain domainname, as above, or attach a latin word to a domainname result.
+
+	et.example.com
+	example.org
+
+=head2 email / mail
 
 =head2 path
 
 =head2 httpurl
 
 =head2 mailto
-
-=head2 tld topleveldomain
-
-=head2 domain domainname
-
-=head2 host hostname
 
 =cut
 
@@ -145,7 +182,7 @@ _END_
 
 	title => sub { [ sub { ucfirst($_) },  "+word", 1 + int rand 3 ] },
 
-	description => sub { [ "+sentence", 2 + int rand 3 ] },
+	description => sub { [ "+sentence", 1 + int rand 3 ] },
 
 	sentence => sub { [ sub { ucfirst($_) . "." },  "+word", 4 + int rand 6 ] },
 
@@ -380,11 +417,12 @@ sub _process {
 	my $separator = shift;
 
 	$RECURSION += 1;
-	croak "too much recursion ($RECURSION) on \"$content\"" if $RECURSION >= MAXIMUM_RECURSION;
+	croak "Too much recursion ($RECURSION) on \"$content\"" if $RECURSION >= MAXIMUM_RECURSION;
 
 	$count = 1 unless defined $count;
+    croak "\$count ($count) should be a number" unless $count =~ m/^\d+$/;
+
 	$separator = " " unless defined $separator;
-	carp "count must be a number, not \"$count\"" if ref $count || $count !~ m/^\d$/;
 
 	local $Text::Lorem::More::COUNT = $count; $COUNT = $COUNT;
 	local $Text::Lorem::More::PRUNE = 0;
@@ -414,11 +452,12 @@ sub _generate {
 	my $fast = shift;
 
 	$RECURSION += 1;
-	croak "too much recursion ($RECURSION) on \"$pattern\"" if $RECURSION >= MAXIMUM_RECURSION;
+	croak "Too much recursion ($RECURSION) on \"$pattern\"" if $RECURSION >= MAXIMUM_RECURSION;
 
 	$count = 1 unless defined $count;
+    croak "\$count ($count) should be a number" unless $count =~ m/^\d+$/;
+
 	$separator = " " unless defined $separator;
-	carp "count must be a number, not \"$count\"" if ref $count || $count !~ m/^\d$/;
 
 	local $Text::Lorem::More::COUNT = $count; $COUNT = $COUNT;
 	local $Text::Lorem::More::PRUNE = 0;
@@ -456,7 +495,7 @@ sub _replace_pattern {
 		$content = $generatelet->($self);
 	}
 	else {
-		croak "don't know how to run/handle generatelet \"$generatelet\"";
+		croak "Don't know how to run/handle generatelet \"$generatelet\"";
 	}
 
 	if (ref $content eq "ARRAY") {
@@ -488,12 +527,23 @@ Robert Krimen, C<< <robertkrimen at gmail.com> >>
 
 =head1 SEE ALSO
 
-L<Text::Lorem> and L<WWW::Lipsum> and L<http://lipsum.com/>
+L<Text::Lorem>
+
+L<WWW::Lipsum>
+
+L<http://lipsum.com/>
+
+=head1 SOURCE
+
+You can contribute or fork this project via GitHub:
+
+L<http://github.com/robertkrimen/text-lorem-more/tree/master>
+
+    git clone git://github.com/robertkrimen/text-lorem-more.git Text-Lorem-More
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to Adeola Awoyemi for writing L<Text::Lorem> which was the inspiration
-behind this module.
+Thanks to Adeola Awoyemi for writing L<Text::Lorem>
 
 =head1 COPYRIGHT & LICENSE
 
